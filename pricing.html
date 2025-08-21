@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SecureNet Check | Start Free Trial</title>
+<meta name="description" content="Start your 7-day free trial. Then $9.99/month. Cancel anytime. Apple Pay & Google Pay supported.">
+<meta property="og:title" content="SecureNet Check | Free Trial" />
+<meta property="og:description" content="7-day free trial → $9.99/month. Cancel anytime. Apple Pay & Google Pay supported." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="/favicon.ico" />
+
+<!-- Minimal CSP (adjust as needed) -->
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self';
+           connect-src 'self' https://cdn.paddle.com https://*.paddle.com;
+           img-src 'self' data:;
+           script-src 'self' https://cdn.paddle.com 'unsafe-inline' 'unsafe-eval';
+           style-src 'self' 'unsafe-inline';
+           frame-src https://checkout.paddle.com https://*.paddle.com;">
+
+<style>
+  :root{--bg:#0b1220;--card:#11192b;--line:#21304d;--text:#e8eefc;--muted:#94a9d1;--pri:#2b6cf6;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  a{color:#bcd0ff;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:880px;margin:0 auto;padding:24px}
+  header{padding:24px 0;display:flex;justify-content:space-between;align-items:center}
+  .logo{font-weight:800;font-size:20px}
+  .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:center}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  h1{font-size:28px;margin:0 0 10px}
+  h2{font-size:20px;margin:0 0 8px}
+  p{color:var(--muted);line-height:1.6;margin:0 0 12px}
+  ul{margin:12px 0 0 18px;color:#cfe0ff}
+  li{margin:6px 0}
+  .btn{display:inline-flex;gap:10px;align-items:center;background:var(--pri);border:0;color:#fff;padding:14px 18px;border-radius:12px;font-weight:700;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  .sub{font-size:12px;color:#bcd0ff;margin-top:8px}
+  .legal{font-size:12px;color:#8ea6d8;margin-top:16px;line-height:1.4}
+  footer{margin-top:28px;font-size:12px;color:#89a0d6;text-align:center}
+  @media (max-width:820px){ .hero{grid-template-columns:1fr} }
+</style>
+
+<!-- Paddle v2 SDK -->
+<script defer src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">SecureNet Check</div>
+    <div style="font-size:12px;color:#cfe0ff;">Apple Pay / Google Pay supported</div>
+  </header>
+
+  <section class="hero">
+    <div class="card">
+      <h1>Start Your 7-Day Free Trial</h1>
+      <p>Unlock advanced IP and network insights: reverse DNS, VPN/Tor detection, RBL checks, WebRTC leak test, and more. Try it free for 7 days. Cancel anytime.</p>
+      <ul>
+        <li>Free for the first 7 days</li>
+        <li>Then <b>$9.99 per month</b> (auto-renewing)</li>
+        <li>Billing starts <b>after the trial ends</b></li>
+      </ul>
+
+      <button id="checkoutBtn" class="btn">Start Free Trial</button>
+      <div class="sub">Secure checkout powered by Paddle.</div>
+
+      <div class="legal">
+        After your 7-day trial, your subscription will automatically renew at $9.99/month until canceled.<br/>
+        You can cancel anytime via your confirmation email or account management link.<br/>
+        All prices are in USD. Your bank may apply exchange rates or card fees.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>What You Get</h2>
+      <ul>
+        <li>Instant IP & Reverse DNS lookup</li>
+        <li>VPN / Proxy / Tor detection</li>
+        <li>Blacklist and RBL checks</li>
+        <li>WebRTC leak test</li>
+        <li>Latency test to global endpoints</li>
+        <li>Cancel anytime</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    © SecureNet Check · <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a>
+  </footer>
+</div>
+
+<script>
+  // ===== Paddle v2: Replace with your live token =====
+  Paddle.Initialize({
+    token: 'live_xxxxxxxxxxxxxxxxxxxxx' // TODO: set your real live token
+  });
+
+  // ===== Replace with your real price that has "7-day trial" & "$9.99/month" =====
+  const PRICE_ID = 'pri_xxx_monthly_999_trial7d'; // TODO: your real priceId from Paddle
+
+  // Optional: identify the customer before opening checkout (if you have an auth system)
+  // Paddle.Checkout.Customer.set({ email: 'user@example.com' });
+
+  document.getElementById('checkoutBtn').addEventListener('click', () => {
+    Paddle.Checkout.open({
+      items: [{ priceId: PRICE_ID }],
+      settings: {
+        // After successful checkout, send the user to your dashboard
+        successUrl: 'https://your-domain.com/index.html',
+        // Optionally, you can collect billing/shipping address automatically:
+        // collectTaxId: true,
+      }
+    });
+  });
+</script>
+</body>
+</html>

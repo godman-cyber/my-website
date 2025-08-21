@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SecureNet Check (All-in-One)</title>
+<meta name="description" content="Advanced IP & network insights: reverse DNS, VPN/Tor detection, RBL checks, WebRTC leak test, latency and more.">
+<meta property="og:title" content="SecureNet Check" />
+<meta property="og:description" content="7-day free trial. Then $9.99/month. Cancel anytime. Apple Pay & Google Pay supported." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="/favicon.ico" />
+
+<!-- Minimal CSP (adjust as your infra needs) -->
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self';
+           connect-src 'self' https://api.ipify.org https://api64.ipify.org https://ipapi.co https://cloudflare-dns.com https://dns.google https://cdn.jsdelivr.net;
+           img-src 'self' data:;
+           script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval';
+           style-src 'self' 'unsafe-inline';
+           frame-src 'self';">
+
+<style>
+  :root { --bg:#0b1220; --card:#11192b; --line:#21304d; --text:#e8eefc; --muted:#94a9d1; }
+  body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0;padding:24px;display:grid;place-items:start}
+  h1{margin:0 0 18px;font-size:22px}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+  button,.pillBtn{background:#172340;border:1px solid var(--line);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer}
+  button:hover,.pillBtn:hover{background:#1d2c52}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 16px;box-shadow:0 6px 20px rgba(0,0,0,.35);width:min(980px,96vw)}
+  h2{margin:0 0 10px;font-size:18px;color:#aac4ff;border-bottom:1px solid var(--line);padding-bottom:6px}
+  .scoreWrap{display:flex;align-items:center;justify-content:space-between}
+  .scoreBadge{font-weight:800;padding:4px 10px;border-radius:999px;border:1px solid}
+  .safe{color:#b7ffd6;border-color:#35a56b;background:rgba(53,165,107,.12)}
+  .warn{color:#ffe9b0;border-color:#b08a24;background:rgba(176,138,36,.12)}
+  .risk{color:#ffb7b7;border-color:#b03d3d;background:rgba(176,61,61,.12)}
+  .score{font-size:30px;font-weight:900}
+  .muted{color:var(--muted);font-size:14px}
+  .list{margin:10px 0 0 18px;padding:0}
+  .list li{margin:6px 0;line-height:1.6;list-style:disc}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:760px){.grid2{grid-template-columns:1fr}}
+  .kv{display:grid;grid-template-columns:180px 1fr;gap:8px}
+  .pill{display:inline-block;margin-top:6px;margin-right:6px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;color:#cfe0ff;font-size:12px}
+  .note{font-size:12px;color:#7f92c8;margin-top:8px}
+  .ok{color:#b7ffd6}.bad{color:#ffb7b7}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:6px;border-bottom:1px solid var(--line);font-size:14px}
+  .banner{background:#0e2342;border:1px dashed #2b4b80;padding:10px 12px;border-radius:10px;font-size:13px;color:#cfe0ff;margin:0 0 12px}
+  #qrModal{display:none;position:fixed;inset:0;margin:auto;max-width:340px;z-index:9999}
+  @media print{ .toolbar{display:none} .card{box-shadow:none} body{background:#fff;color:#000} }
+  /* Mobile */
+  @media (max-width: 600px){
+    body{
+      padding: max(16px, env(safe-area-inset-top)) 16px
+               max(16px, env(safe-area-inset-bottom)) 16px;
+    }
+    h1{ font-size: 18px; margin-bottom: 12px; }
+    .card{ padding: 12px; border-radius: 12px; }
+    .score{ font-size: 26px; }
+    .toolbar{ gap: 8px; position: sticky; top: env(safe-area-inset-top, 0); background: var(--bg); z-index: 10; padding-top: 4px; }
+    .toolbar button{ padding: 10px 12px; min-height: 40px; }
+    .kv{ grid-template-columns: 1fr; gap: 4px; }
+    .kv > div:nth-child(odd){ opacity: .8; margin-top: 10px; }
+    .kv > div:nth-child(even){ margin-bottom: 6px; }
+    .list{ margin-left: 16px; }
+    table th, table td{ padding: 8px 6px; }
+  }
+  .kv > div:nth-child(even), td, .muted{ overflow-wrap:anywhere; word-break:break-word; }
+  button{ min-height:36px; -webkit-tap-highlight-color:rgba(255,255,255,0.1); }
+</style>
+
+<!-- libs -->
+<script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+</head>
+<body>
+
+<h1 id="title">SecureNet Check</h1>
+
+<!-- snapshot notice -->
+<div id="shareBanner" class="banner" style="display:none">
+  This page is a snapshot restored from a share link (some tests are disabled).
+</div>
+
+<!-- toolbar -->
+<div class="toolbar">
+  <button id="btnPng">Export PNG</button>
+  <button id="btnPdf">Export PDF</button>
+  <button id="btnShare">Create Share Link</button>
+  <button id="btnQR">Show QR</button>
+  <button id="btnRefresh">🔄 Refresh</button>
+  <button id="btnSave">💾 Save to History</button>
+  <button id="btnCsv">Export CSV</button>
+  <label class="pillBtn"><input type="checkbox" id="chkMon" style="accent-color:#6ba4ff;margin-right:6px"><span id="monText">Monitor IP changes</span></label>
+  <button id="btnClear" title="Delete only local history">Clear History</button>
+</div>
+
+<!-- safety -->
+<div class="card" id="captureTop">
+  <h2 id="hSafety">Network Safety</h2>
+  <div class="scoreWrap">
+    <div>
+      <div id="safetyLabel" class="scoreBadge safe">Safe ✅</div>
+      <div class="muted" id="safetyApprox">Approximation based on browser-side checks</div>
+    </div>
+    <div id="safetyScore" class="score">100%</div>
+  </div>
+  <ul id="safetyReasons" class="muted list"></ul>
+</div>
+
+<!-- IP -->
+<div class="card">
+  <h2 id="hIP">IP Address</h2>
+  <div class="kv">
+    <div id="kCurrentIP">Current IP</div><div id="ip">—</div>
+    <div id="kIPv4">IPv4</div><div id="ipv4">—</div>
+    <div id="kIPv6">IPv6</div><div id="ipv6">—</div>
+    <div id="kRDNS">Reverse DNS</div><div id="rdns">Fetching…</div>
+    <div id="kWebRTC">WebRTC</div><div id="webrtc">Checking…</div>
+  </div>
+  <div style="margin-top:10px"><span class="pill" id="copyBtn">Copy</span></div>
+</div>
+
+<!-- Geo & ISP -->
+<div class="grid2">
+  <div class="card">
+    <h2 id="hGeo">Country & City</h2>
+    <div class="kv">
+      <div id="kCountry">Country</div><div id="country">—</div>
+      <div id="kCity">City</div><div id="city">—</div>
+      <div id="kTZ">Time Zone</div><div id="tzGeo">—</div>
+    </div>
+  </div>
+  <div class="card">
+    <h2 id="hISP">ISP / ASN</h2>
+    <div class="kv">
+      <div id="kISP">ISP/Org</div><div id="isp">—</div>
+      <div id="kASN">ASN</div><div id="asn">—</div>
+      <div id="kLineType">Line Type</div><div id="lineType">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- Security -->
+<div class="card">
+  <h2 id="hSec">Security Details</h2>
+  <ul class="list muted">
+    <li><span id="lblVpn">VPN/Proxy suspicion</span>: <span id="vpnGuess">Checking…</span></li>
+    <li><span id="lblTor">Tor exit node</span>: <span id="torExit">Checking…</span></li>
+    <li><span id="lblRbl">RBL (blacklist) hits</span>: <span id="rblHits">Checking…</span></li>
+  </ul>
+  <div class="note" id="rblNote">* RBL is checked over DoH against <code>zen.spamhaus.org</code> / <code>bl.spamcop.net</code> / <code>dnsbl.dronebl.org</code> (reference only).</div>
+</div>
+
+<!-- Speed -->
+<div class="card">
+  <h2 id="hSpeed">Quick Speed Test (Latency)</h2>
+  <div class="muted" style="margin-bottom:8px" id="speedDesc">Round-trip time of tiny requests (lower is better).</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+    <button id="btnPing">▶ Run Test</button>
+  </div>
+  <div class="kv">
+    <div id="kCF">Cloudflare DoH</div><div id="lat1">—</div>
+    <div id="kGOOG">Google DoH</div><div id="lat2">—</div>
+    <div id="kJSD">jsDelivr CDN</div><div id="lat3">—</div>
+  </div>
+</div>
+
+<!-- History -->
+<div class="card" id="histCard" style="display:none">
+  <h2 id="hHist">History (stored on this device)</h2>
+  <table>
+    <thead><tr><th id="thDate">Date/Time</th><th>IP</th><th id="thGeo">Country/City</th><th>ISP</th><th id="thSafe">Safety</th><th id="thMemo">Note</th><th id="thAct">Action</th></tr></thead>
+    <tbody id="histBody"></tbody>
+  </table>
+</div>
+
+<!-- QR modal -->
+<div id="qrModal" class="card">
+  <h2 id="qrTitle">Share QR</h2>
+  <div id="qrBox" style="background:var(--bg);padding:12px;border-radius:12px;display:grid;place-items:center"></div>
+  <div class="muted" style="margin-top:8px" id="qrHelp">Scan with your phone.</div>
+  <div style="text-align:right;margin-top:10px"><button id="qrClose">Close</button></div>
+</div>
+
+<footer class="muted" style="font-size:12px">Powered by ipify / ipapi.co / Cloudflare DNS JSON / Google DNS JSON (safety is an approximate heuristic)</footer>
+
+<script>
+/* ---------- English-only texts ---------- */
+const I18N = {
+  en: {
+    title:"SecureNet Check",
+    banner:"This page is a snapshot restored from a share link (some tests are disabled).",
+    btnPng:"Export PNG", btnPdf:"Export PDF", btnShare:"Create Share Link", btnQR:"Show QR",
+    btnRefresh:"🔄 Refresh", btnSave:"💾 Save to History", btnCsv:"Export CSV", btnClear:"Clear History",
+    monText:"Monitor IP changes",
+    hSafety:"Network Safety", approx:"Approximation based on browser-side checks",
+    hIP:"IP Address", kCurrentIP:"Current IP", kIPv4:"IPv4", kIPv6:"IPv6", kRDNS:"Reverse DNS", kWebRTC:"WebRTC",
+    hGeo:"Country & City", kCountry:"Country", kCity:"City", kTZ:"Time Zone",
+    hISP:"ISP / ASN", kISP:"ISP/Org", kASN:"ASN", kLineType:"Line Type",
+    hSec:"Security Details", lblVpn:"VPN/Proxy suspicion", lblTor:"Tor exit node", lblRbl:"RBL hits",
+    rblNote:"* RBL checked via DoH: zen.spamhaus.org / bl.spamcop.net / dnsbl.dronebl.org (for reference).",
+    hSpeed:"Quick Speed Test (Latency)", speedDesc:"Measure round-trip time of tiny requests (lower is better).",
+    kCF:"Cloudflare DoH", kGOOG:"Google DoH", kJSD:"jsDelivr CDN",
+    hHist:"History (stored on this device)", thDate:"Date/Time", thGeo:"Country/City", thSafe:"Safety", thMemo:"Note", thAct:"Action",
+    qrTitle:"Share QR", qrHelp:"Scan with your phone.", qrClose:"Close",
+    labelSafe:"Safe ✅", labelWarn:"Caution ⚠️", labelRisk:"Risk ❌",
+    toastCopied:"Copied ✔", toastShared:"Share link copied ✔", toastSaved:"Saved to history",
+    confirmClear:"Delete all local history?", noHistory:"No history",
+    measuring:"Measuring…", pending:"Checking…", checking:"Checking…", fetching:"Fetching…", failed:"Failed", na:"—",
+    exposed:"Local IP exposed", notExposed:"No exposure", unknown:"Unknown", ipv4Only:"IPv4 only",
+    guessLow:"Low", guessSusp:"Suspicious", torYes:"Matched (Tor exit)", torNo:"Not matched", torNA:"N/A",
+    reason_dc:"Possible data-center origin", reason_vpn:"Words indicating VPN/Proxy",
+    reason_tz:(g,l)=>`TZ mismatch: Geo=${g} / Local=${l}`,
+    reason_webrtc:"Local IP available via WebRTC",
+    reason_tor:"Tor exit node", reason_rbl:n=>`RBL hits: ${n}`,
+    reasons_ok:"No particular issues detected",
+  }
+};
+let t = I18N.en;
+
+/* ---------------- utilities ---------------- */
+const $ = id => document.getElementById(id);
+const els = {
+  banner:$('shareBanner'), title:$('title'),
+  ip:$('ip'), ipv4:$('ipv4'), ipv6:$('ipv6'), rdns:$('rdns'), webrtc:$('webrtc'),
+  country:$('country'), city:$('city'), tzGeo:$('tzGeo'), isp:$('isp'), asn:$('asn'), lineType:$('lineType'),
+  safetyScore:$('safetyScore'), safetyLabel:$('safetyLabel'), safetyReasons:$('safetyReasons'),
+  vpnGuess:$('vpnGuess'), torExit:$('torExit'), rblHits:$('rblHits'),
+  lat1:$('lat1'), lat2:$('lat2'), lat3:$('lat3'),
+  btnPng:$('btnPng'), btnPdf:$('btnPdf'), btnShare:$('btnShare'), btnQR:$('btnQR'),
+  btnRefresh:$('btnRefresh'), btnPing:$('btnPing'), copyBtn:$('copyBtn'),
+  btnSave:$('btnSave'), btnCsv:$('btnCsv'), chkMon:$('chkMon'), btnClear:$('btnClear'),
+  histCard:$('histCard'), histBody:$('histBody'),
+  qrModal:$('qrModal'), qrBox:$('qrBox'), qrClose:$('qrClose'),
+  monText:$('monText'),
+  hSafety:$('hSafety'), safetyApprox:$('safetyApprox'),
+  hIP:$('hIP'), kCurrentIP:$('kCurrentIP'), kIPv4:$('kIPv4'), kIPv6:$('kIPv6'), kRDNS:$('kRDNS'), kWebRTC:$('kWebRTC'),
+  hGeo:$('hGeo'), kCountry:$('kCountry'), kCity:$('kCity'), kTZ:$('kTZ'),
+  hISP:$('hISP'), kISP:$('kISP'), kASN:$('kASN'), kLineType:$('kLineType'),
+  hSec:$('hSec'), lblVpn:$('lblVpn'), lblTor:$('lblTor'), lblRbl:$('lblRbl'), rblNote:$('rblNote'),
+  hSpeed:$('hSpeed'), speedDesc:$('speedDesc'), kCF:$('kCF'), kGOOG:$('kGOOG'), kJSD:$('kJSD'),
+  hHist:$('hHist'), thDate:$('thDate'), thGeo:$('thGeo'), thSafe:$('thSafe'), thMemo:$('thMemo'), thAct:$('thAct'),
+  qrTitle:$('qrTitle'), qrHelp:$('qrHelp')
+};
+const browserTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+const LS_KEY = 'ipdash_history_v2';
+function toast(msg){ const b=document.createElement('div'); b.textContent=msg; Object.assign(b.style,{position:'fixed',bottom:'20px',left:'50%',transform:'translateX(-50%)',background:'#172340',border:'1px solid #2b3c61',padding:'10px 14px',borderRadius:'10px',zIndex:9999}); document.body.appendChild(b); setTimeout(()=>b.remove(),1600); }
+function copy(tk){ navigator.clipboard.writeText(tk).then(()=>toast(t.toastCopied)); }
+els.copyBtn.onclick = ()=> copy(els.ip.textContent);
+
+/* Safer base64 encode/decode (no escape/unescape) */
+function encodeState(obj){
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  let bin = ''; bytes.forEach(b=>bin+=String.fromCharCode(b));
+  return btoa(bin);
+}
+function decodeState(b64){
+  try{
+    const bin = atob(b64); const bytes = new Uint8Array(bin.length);
+    for (let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }catch{ return null; }
+}
+
+async function j(url){
+  const r=await fetch(url,{headers:{'accept':'application/dns-json, application/json, text/plain, */*'}});
+  if(!r.ok) throw new Error(r.status);
+  const ct=r.headers.get('content-type')||'';
+  return ct.includes('application/json')?r.json():r.text();
+}
+function flag(cc){ if(!cc||cc.length!==2) return ''; const base=127397; return String.fromCodePoint(cc.toUpperCase().charCodeAt(0)+base, cc.toUpperCase().charCodeAt(1)+base); }
+function isDataCenter(org,asn,host=''){ const s=(org+' '+asn+' '+host).toLowerCase(); return ['hosting','host','server','vps','datacenter','cloud','aws','amazon','google','gcp','azure','ovh','hetzner','vultr','linode','digitalocean','leaseweb','contabo','m247','colo'].some(k=>s.includes(k)); }
+function hasVpnWord(org,host=''){ const s=(org+' '+host).toLowerCase(); return /(vpn|proxy|tor|socks)/.test(s); }
+
+/* ---- WebRTC leak status ---- */
+async function webrtcStatus(){
+  if(!window.RTCPeerConnection) return 'na';
+  const pc=new RTCPeerConnection({iceServers:[]}); pc.createDataChannel('x');
+  const cands=[];
+  try{
+    const offer=await pc.createOffer(); await pc.setLocalDescription(offer);
+    return await new Promise(res=>{
+      const to=setTimeout(()=>{pc.close();res('unknown');},2500);
+      pc.onicecandidate=e=>{
+        if(!e.candidate){ clearTimeout(to); pc.close();
+          const hit=cands.some(c=>/(^|[^\d])10\.|(^|[^\d])192\.168\.|(^|[^\d])172\.(1[6-9]|2\d|3[0-1])\.|(^|[^\w])fc00:|(^|[^\w])fd00:/i.test(c));
+          res(hit?'exposed':'none'); return;
+        }
+        cands.push(e.candidate.candidate||'');
+      };
+    });
+  }catch{ try{pc.close();}catch{}; return 'unknown'; }
+}
+
+/* ---- Tor / RBL ---- */
+async function isTorExit(ip){ try{ const txt=await j('https://r.jina.ai/http://check.torproject.org/torbulkexitlist?ip=1'); return (typeof txt==='string')?txt.split('\n').some(l=>l.trim()===ip):null; }catch{ return null; } }
+async function dnsblListed(ip,zone){
+  if(!/^\d+\.\d+\.\d+\.\d+$/.test(ip)) return false;
+  const q = ip.split('.').reverse().join('.') + '.' + zone;
+  try{ const r=await j(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(q)}&type=A`); return r && r.Status===0 && Array.isArray(r.Answer); }catch{ return null; }
+}
+
+/* ---- latency ---- */
+async function pingOnce(url){ const t0=performance.now(); await fetch(url,{cache:'no-store'}); return Math.round(performance.now()-t0); }
+async function measureLatency(){
+  els.lat1.textContent=t.measuring; els.lat2.textContent=t.measuring; els.lat3.textContent=t.measuring;
+  try{ els.lat1.textContent=(await pingOnce('https://cloudflare-dns.com/dns-query?name=example.com&type=A'))+' ms'; }catch{ els.lat1.textContent=t.na; }
+  try{ els.lat2.textContent=(await pingOnce('https://dns.google/resolve?name=example.com&type=A'))+' ms'; }catch{ els.lat2.textContent=t.na; }
+  try{ els.lat3.textContent=(await pingOnce('https://cdn.jsdelivr.net/npm/normalize.css'))+' ms'; }catch{ els.lat3.textContent=t.na; }
+}
+document.getElementById('btnPing').onclick = measureLatency;
+
+/* ---- PNG / PDF / Share / QR / Refresh ---- */
+document.getElementById('btnPng').onclick = async ()=>{
+  const canvas=await html2canvas(document.body,{scale:2,backgroundColor:getComputedStyle(document.body).backgroundColor});
+  const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download='ip-dashboard.png'; a.click();
+};
+document.getElementById('btnPdf').onclick = async ()=>{
+  const canvas=await html2canvas(document.body,{scale:2,backgroundColor:getComputedStyle(document.body).backgroundColor});
+  const { jsPDF }=window.jspdf; const pdf=new jsPDF({unit:'pt',format:'a4',compress:true});
+  const w=pdf.internal.pageSize.getWidth(), h=canvas.height*(w/canvas.width);
+  let remain=h, ySrc=0, pageH=pdf.internal.pageSize.getHeight()-40, sliceH=canvas.height*((pageH)/h);
+  while(remain>0){
+    const part=document.createElement('canvas'); part.width=canvas.width; part.height=Math.min(sliceH, canvas.height-ySrc);
+    part.getContext('2d').drawImage(canvas,0,ySrc,canvas.width,part.height,0,0,canvas.width,part.height);
+    pdf.addImage(part.toDataURL('image/png'),'PNG',20,20,w-40,(part.height*(w-40)/canvas.width));
+    ySrc+=part.height; remain-=(part.height*(w-40)/canvas.width);
+    if(remain>0) pdf.addPage();
+  }
+  pdf.save('ip-dashboard.pdf');
+};
+function currentState(){
+  return {
+    ip:els.ip.textContent, ipv4:els.ipv4.textContent, ipv6:els.ipv6.textContent, rdns:els.rdns.textContent,
+    webrtc:els.webrtc.textContent, country:els.country.textContent, city:els.city.textContent, tzGeo:els.tzGeo.textContent,
+    isp:els.isp.textContent, asn:els.asn.textContent, lineType:els.lineType.textContent,
+    safetyScore:els.safetyScore.textContent, reasons:[...els.safetyReasons.querySelectorAll('li')].map(li=>li.textContent),
+    vpnGuess:els.vpnGuess.textContent, torExit:els.torExit.textContent, rblHits:els.rblHits.textContent, ts:Date.now()
+  };
+}
+document.getElementById('btnShare').onclick = ()=>{
+  const url=location.origin+location.pathname+'#data='+encodeState(currentState());
+  navigator.clipboard.writeText(url).then(()=>toast(t.toastShared));
+};
+document.getElementById('btnQR').onclick = ()=>{
+  const url=location.origin+location.pathname+'#data='+encodeState(currentState());
+  document.getElementById('qrBox').innerHTML='';
+  new QRCode(document.getElementById('qrBox'),{text:url,width:260,height:260});
+  document.getElementById('qrModal').style.display='block';
+};
+document.getElementById('qrClose').onclick = ()=> document.getElementById('qrModal').style.display='none';
+document.getElementById('btnRefresh').onclick = ()=> location.reload();
+
+/* ---- history ---- */
+const copyHist = {
+  load(){ try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]')}catch{return[]} },
+  save(a){ localStorage.setItem(LS_KEY, JSON.stringify(a)); },
+  render(){
+    const a=this.load(); els.histCard.style.display = a.length?'block':'none';
+    els.histBody.innerHTML='';
+    a.forEach((r,i)=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${new Date(r.ts).toLocaleString()}</td>
+        <td>${r.ip}</td><td>${r.country} ${r.city||''}</td><td>${r.isp||''}</td>
+        <td>${r.safetyScore||''}</td><td>${(r.note||'').replace(/</g,'&lt;')}</td>
+        <td><button data-i="${i}" class="delBtn">Delete</button></td>`;
+      els.histBody.appendChild(tr);
+    });
+    els.histBody.querySelectorAll('.delBtn').forEach(b=>b.onclick=()=>{
+      const a=this.load(); a.splice(Number(b.dataset.i),1); this.save(a); this.render();
+    });
+  }
+};
+copyHist.render();
+document.getElementById('btnSave').onclick = ()=>{
+  const st=currentState(); st.note=prompt('Note (optional):')||'';
+  const a=copyHist.load(); a.unshift(st); copyHist.save(a); copyHist.render(); toast(t.toastSaved);
+};
+document.getElementById('btnCsv').onclick = ()=>{
+  const a=copyHist.load(); if(!a.length) return alert(t.noHistory);
+  const head=['timestamp','ip','country','city','isp','asn','safety','note'];
+  const rows=a.map(r=>[new Date(r.ts).toISOString(),r.ip,r.country||'',r.city||'',r.isp||'',r.asn||'',r.safetyScore||'',(r.note||'').replace(/"/g,'""')]);
+  const csv=[head.join(','),...rows.map(cols=>cols.map(x=>`"${x}"`).join(','))].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
+  const aTag=document.createElement('a'); aTag.href=url; aTag.download='ip-history.csv'; aTag.click(); URL.revokeObjectURL(url);
+};
+document.getElementById('btnClear').onclick = ()=>{ if(confirm(t.confirmClear)){ localStorage.removeItem(LS_KEY); copyHist.render(); } };
+
+/* ---- monitor ---- */
+let monTimer=null,lastIP=null;
+document.getElementById('chkMon').onchange = (e)=>{
+  if(e.target.checked){
+    monTimer=setInterval(async()=>{
+      try{
+        const ip=(await j('https://api.ipify.org?format=json')).ip;
+        if(!lastIP) lastIP=els.ip.textContent||ip;
+        if(ip && ip!==lastIP){
+          const st=currentState(); st.note='Auto-saved: IP change detected'; const a=copyHist.load(); a.unshift(st); copyHist.save(a);
+          toast('IP change detected → Auto-saved & refreshed'); location.reload();
+        }
+      }catch{}
+    },60000);
+  } else { clearInterval(monTimer); monTimer=null; }
+};
+
+/* ---- restore from share ---- */
+function renderShared(s){
+  els.banner.style.display='block'; els.banner.textContent=t.banner;
+  document.getElementById('btnPing').disabled=true; els.chkMon.disabled=true;
+  els.ip.textContent=s.ip; els.ipv4.textContent=s.ipv4; els.ipv6.textContent=s.ipv6; els.rdns.textContent=s.rdns;
+  els.webrtc.textContent=s.webrtc; els.country.textContent=s.country; els.city.textContent=s.city; els.tzGeo.textContent=s.tzGeo;
+  els.isp.textContent=s.isp; els.asn.textContent=s.asn; els.lineType.textContent=s.lineType;
+  els.safetyScore.textContent=s.safetyScore;
+  const sc=parseInt(s.safetyScore)||0; const lab=(sc>=80)?{t:t.labelSafe,c:'safe'}:(sc>=60)?{t:t.labelWarn,c:'warn'}:{t:t.labelRisk,c:'risk'};
+  els.safetyLabel.textContent=lab.t; els.safetyLabel.className='scoreBadge '+lab.c;
+  els.safetyReasons.innerHTML=(s.reasons||[]).map(r=>`<li>${r}</li>`).join('');
+  els.vpnGuess.textContent=s.vpnGuess; els.torExit.textContent=s.torExit; els.rblHits.textContent=s.rblHits;
+}
+
+/* ---- main (EN forced) ---- */
+(async ()=>{
+  // Force English always
+  (function applyTexts(){
+    document.title = t.title; $('title').textContent = t.title;
+    $('btnPng').textContent=t.btnPng; $('btnPdf').textContent=t.btnPdf; $('btnShare').textContent=t.btnShare; $('btnQR').textContent=t.btnQR;
+    $('btnRefresh').textContent=t.btnRefresh; $('btnSave').textContent=t.btnSave; $('btnCsv').textContent=t.btnCsv; $('btnClear').textContent=t.btnClear;
+    els.monText.textContent=t.monText;
+
+    els.hSafety.textContent=t.hSafety; els.safetyApprox.textContent=t.approx;
+    els.hIP.textContent=t.hIP; els.kCurrentIP.textContent=t.kCurrentIP; els.kIPv4.textContent=t.kIPv4; els.kIPv6.textContent=t.kIPv6; els.kRDNS.textContent=t.kRDNS; els.kWebRTC.textContent=t.kWebRTC;
+    els.hGeo.textContent=t.hGeo; els.kCountry.textContent=t.kCountry; els.kCity.textContent=t.kCity; els.kTZ.textContent=t.kTZ;
+    els.hISP.textContent=t.hISP; els.kISP.textContent=t.kISP; els.kASN.textContent=t.kASN; els.kLineType.textContent=t.kLineType;
+    els.hSec.textContent=t.hSec; els.lblVpn.textContent=t.lblVpn; els.lblTor.textContent=t.lblTor; els.lblRbl.textContent=t.lblRbl; els.rblNote.textContent=t.rblNote;
+    els.hSpeed.textContent=t.hSpeed; els.speedDesc.textContent=t.speedDesc; els.kCF.textContent=t.kCF; els.kGOOG.textContent=t.kGOOG; els.kJSD.textContent=t.kJSD;
+    els.hHist.textContent=t.hHist; els.thDate.textContent=t.thDate; els.thGeo.textContent=t.thGeo; els.thSafe.textContent=t.thSafe; els.thMemo.textContent=t.thMemo; els.thAct.textContent=t.thAct;
+    els.qrTitle.textContent=t.qrTitle; els.qrHelp.textContent=t.qrHelp; $('qrClose').textContent=t.qrClose;
+  })();
+  document.documentElement.lang = 'en';
+
+  // shared snapshot restore
+  if(location.hash.startsWith('#data=')){ const s=decodeState(location.hash.slice(6)); if(s){ renderShared(s); } return; }
+
+  // IPs
+  let v4=null,v6=null,geo={};
+  try{ v4=(await j('https://api.ipify.org?format=json')).ip; els.ipv4.textContent=v4; }catch{ els.ipv4.textContent=t.failed; }
+  try{ v6=(await j('https://api64.ipify.org?format=json')).ip; els.ipv6.textContent=v6; }catch{ els.ipv6.textContent=t.failed; }
+  const mainIP=v4||v6; els.ip.textContent=mainIP||t.na;
+
+  if(mainIP){
+    try{
+      geo = await j(`https://ipapi.co/${mainIP}/json/`);
+      els.country.textContent=`${geo.country_name||t.unknown} ${flag(geo.country||'')}`;
+      els.city.textContent=geo.city||t.unknown;
+      els.tzGeo.textContent=geo.timezone||t.unknown;
+      els.isp.textContent=geo.org||t.unknown;
+      els.asn.textContent=geo.asn||t.unknown;
+      els.rdns.textContent=geo.hostname||t.unknown;
+    }catch{ els.country.textContent=els.city.textContent=els.tzGeo.textContent=els.isp.textContent=els.asn.textContent=t.failed; }
+  }
+
+  // WebRTC
+  const wstat = await webrtcStatus();
+  els.webrtc.textContent = (wstat==='exposed') ? t.exposed
+                        : (wstat==='none')    ? t.notExposed
+                        : (wstat==='na')      ? 'Not supported'
+                        : t.unknown;
+  const webrtcExposed = (wstat==='exposed');
+
+  // heuristics (EN only)
+  const dc=isDataCenter(geo.org||'', geo.asn||'', geo.hostname||'');
+  const vpnWord=hasVpnWord(geo.org||'', geo.hostname||'');
+  els.lineType.textContent = dc ? 'Data-center suspected' : 'Residential/Mobile likely';
+  els.vpnGuess.innerHTML = (dc||vpnWord) ? `<span class="bad">${t.guessSusp}</span>` : `<span class="ok">${t.guessLow}</span>`;
+
+  // Tor
+  let tor=null;
+  if(mainIP && /^\d+\.\d+\.\d+\.\d+$/.test(mainIP)){
+    tor = await isTorExit(mainIP);
+    els.torExit.innerHTML = (tor===true)?`<span class="bad">${t.torYes}</span>`:(tor===false?`<span class="ok">${t.torNo}</span>`:t.torNA);
+  }else{ els.torExit.textContent=t.ipv4Only; }
+
+  // RBL
+  let hits=0,unknown=0;
+  const zones=['zen.spamhaus.org','bl.spamcop.net','dnsbl.dronebl.org'];
+  if(mainIP && /^\d+\.\d+\.\d+\.\d+$/.test(mainIP)){
+    for(const z of zones){ const listed=await dnsblListed(mainIP,z); if(listed===true) hits++; if(listed===null) unknown++; }
+  }
+  els.rblHits.textContent = `${hits} / ${zones.length}` + (unknown ? ` (${unknown} not checked)` : '');
+
+  // safety score
+  let score=100; const reasons=[];
+  if(dc){ score-=35; reasons.push(t.reason_dc); }
+  if(vpnWord){ score-=35; reasons.push(t.reason_vpn); }
+  if(geo.timezone && browserTZ && geo.timezone!==browserTZ){ score-=5; reasons.push(t.reason_tz(geo.timezone,browserTZ)); }
+  if(webrtcExposed){ score-=10; reasons.push(t.reason_webrtc); }
+  if(tor===true){ score-=40; reasons.push(t.reason_tor); }
+  if(hits>0){ score-=20; reasons.push(t.reason_rbl(hits)); }
+  score = Math.max(0,Math.min(100,score));
+  els.safetyScore.textContent = score + '%';
+  const lab=(score>=80)?{t:t.labelSafe,c:'safe'}:(score>=60)?{t:t.labelWarn,c:'warn'}:{t:t.labelRisk,c:'risk'};
+  els.safetyLabel.textContent=lab.t; els.safetyLabel.className='scoreBadge '+lab.c;
+  els.safetyReasons.innerHTML = reasons.length ? reasons.map(r=>`<li>${r}</li>`).join('') : `<li>${t.reasons_ok}</li>`;
+})();
+</script>
+</body>
+</html>
