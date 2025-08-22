@@ -1,47 +1,59 @@
 <!doctype html>
 <html lang="en">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Privacy Policy | SecureNet Check</title>
-<style>
-  body{margin:0;background:#0b1220;color:#e8eefc;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:24px}
-  .wrap{max-width:900px;margin:0 auto}
-  a{color:#bcd0ff}
-  h1{margin:0 0 12px}
-  h2{margin:20px 0 8px}
-  .muted{color:#94a9d1}
-  .card{background:#11192b;border:1px solid #21304d;border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
-</style>
-<div class="wrap">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Privacy Policy | SecureNet Check</title>
+  <link rel="canonical" href="https://www.securenetcheck.net/privacy" />
+  <meta name="theme-color" content="#0b1220" />
+  <style>
+    :root{--bg:#0b1220;--text:#e8eefc;--muted:#94a9d1;--card:#11192b;--border:#21304d;--accent:#6da3ff;--accent-strong:#4d7cff;--radius:14px}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;line-height:1.6}
+    a{color:#bcd0ff;text-decoration:none}a:hover{text-decoration:underline}
+    .container{max-width:900px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;background:linear-gradient(180deg,rgba(11,18,32,.95),rgba(11,18,32,.75));border-bottom:1px solid var(--border)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent-strong)}
+    main{padding:40px 0}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-top:20px}
+    h1{margin:0 0 8px}.muted{color:var(--muted)}
+    footer{border-top:1px solid var(--border);margin-top:36px}.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:18px}
+    @media(max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}}@media(max-width:640px){.footer-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <div class="brand"><span class="dot"></span> SecureNet Check</div>
+    <nav style="display:flex;gap:12px;align-items:center">
+      <a href="/">Home</a><a href="/pricing">Pricing</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refund">Refunds</a><a href="/cancel">Cancel</a>
+    </nav>
+  </div>
+</header>
+<main class="container">
   <h1>Privacy Policy</h1>
-  <p class="muted">Last updated: 2025-08-20</p>
-
+  <p class="muted">Last updated: January 1, 2025</p>
   <div class="card">
     <h2>1. Information We Collect</h2>
-    <ul>
-      <li>Network and browser data used to generate diagnostics (e.g., IP, ASN, latency).</li>
-      <li>Minimal cookies/local storage for preferences and optional history on your device only.</li>
-      <li>Billing information is processed by Paddle; we do not store full card details.</li>
-    </ul>
-
+    <p>We collect account data, payment info, and usage logs necessary to provide our service.</p>
     <h2>2. How We Use Information</h2>
-    <ul>
-      <li>Provide and improve the diagnostic features.</li>
-      <li>Prevent abuse and maintain security.</li>
-      <li>Handle subscription and support requests.</li>
-    </ul>
-
-    <h2>3. Data Sharing</h2>
-    <p>We do not sell personal data. We share data with service providers only as necessary (e.g., Paddle for payments).</p>
-
-    <h2>4. Data Retention</h2>
-    <p>Diagnostic results shown in the dashboard are generated client‑side. Your local history is stored on your device and you may clear it at any time. Server‑side logs, if any, are retained for a limited time for security/audit.</p>
-
-    <h2>5. Your Rights</h2>
-    <p>You may contact us to access or delete information we hold about you where applicable by law.</p>
-
-    <h2>6. Contact</h2>
-    <p><a href="mailto:support@securenetcheck.net">support@securenetcheck.net</a></p>
+    <p>Information is used for billing, support, and improving the service. We never sell your data.</p>
+    <h2>3. Data Retention</h2>
+    <p>We keep customer data only as long as necessary to comply with legal obligations.</p>
+    <h2>4. Contact</h2>
+    <p>Email us at <a href="mailto:support@securenetcheck.net">support@securenetcheck.net</a> if you have privacy questions.</p>
   </div>
-</div>
+</main>
+<footer>
+  <div class="container footer-grid" style="padding:22px 24px">
+    <div><div class="brand" style="margin-bottom:8px"><span class="dot"></span> SecureNet Check</div>
+      <div class="muted">Support: <a href="mailto:support@securenetcheck.net">support@securenetcheck.net</a></div>
+    </div>
+    <div><strong>Product</strong><br /><a href="/pricing">Pricing</a><br /><a href="/">Features</a></div>
+    <div><strong>Legal</strong><br /><a href="/terms">Terms</a><br /><a href="/privacy">Privacy</a><br /><a href="/refund">Refund</a><br /><a href="/cancel">Cancel</a></div>
+    <div><strong>Billing</strong><br /><span class="muted">Merchant of Record: Paddle</span></div>
+  </div>
+  <div class="container" style="padding:0 24px 26px"><div class="muted">© <span id="y"></span> SecureNet. All rights reserved.</div></div>
+</footer>
+<script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+</body>
 </html>
