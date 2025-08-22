@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/pricing", "destination": "/pricing.html" },
+    { "source": "/terms", "destination": "/terms/index.html" },
+    { "source": "/privacy", "destination": "/privacy/index.html" }
+  ]
+}
