@@ -1,45 +1,79 @@
 <!doctype html>
 <html lang="en">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Terms of Service | SecureNet Check</title>
-<style>
-  body{margin:0;background:#0b1220;color:#e8eefc;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:24px}
-  .wrap{max-width:900px;margin:0 auto}
-  a{color:#bcd0ff}
-  h1{margin:0 0 12px}
-  h2{margin:20px 0 8px}
-  .muted{color:#94a9d1}
-  .card{background:#11192b;border:1px solid #21304d;border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
-</style>
-<div class="wrap">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Terms of Service | SecureNet Check</title>
+  <link rel="canonical" href="https://www.securenetcheck.net/terms" />
+  <meta name="theme-color" content="#0b1220" />
+  <style>
+    :root{--bg:#0b1220;--text:#e8eefc;--muted:#94a9d1;--card:#11192b;--border:#21304d;--accent:#6da3ff;--accent-strong:#4d7cff;--radius:14px}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;line-height:1.6}
+    a{color:#bcd0ff;text-decoration:none} a:hover{text-decoration:underline}
+    .container{max-width:900px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;background:linear-gradient(180deg,rgba(11,18,32,.95),rgba(11,18,32,.75));border-bottom:1px solid var(--border)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent-strong);box-shadow:0 0 24px rgba(77,124,255,.8)}
+    main{padding:40px 0}
+    h1{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-top:20px}
+    h2{margin:14px 0 8px}
+    ul{margin:6px 0 12px 22px}
+    footer{border-top:1px solid var(--border);margin-top:36px}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:18px}
+    @media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}}
+    @media (max-width:640px){.footer-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <div class="brand"><span class="dot"></span> SecureNet Check</div>
+    <nav style="display:flex;gap:12px;align-items:center">
+      <a href="/">Home</a><a href="/pricing">Pricing</a>
+      <a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refund">Refunds</a><a href="/cancel">Cancel</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
   <h1>Terms of Service</h1>
-  <p class="muted">Last updated: 2025-08-20</p>
+  <p class="muted">Last updated: August 20, 2025</p>
 
   <div class="card">
     <h2>1. Overview</h2>
-    <p>These Terms govern your use of SecureNet Check (“Service”). By accessing or using the Service you agree to these Terms.</p>
+    <p>These Terms govern your use of SecureNet Check (“Service”). By accessing or using the Service, you agree to these Terms.</p>
 
     <h2>2. Use of the Service</h2>
     <ul>
       <li>You must comply with all applicable laws.</li>
-      <li>You may not misuse the Service, attempt to access it by automated means, or interfere with its normal operation.</li>
+      <li>You may not misuse, attempt to access the Service by automated means, interfere with normal operation, or resell access.</li>
+      <li>Accounts are personal; keep your credentials secure.</li>
     </ul>
 
     <h2>3. Subscription & Billing</h2>
-    <p>The Service offers a 7‑day free trial, followed by a monthly subscription. Billing is handled by Paddle. You can cancel anytime from the Paddle receipt/portal.</p>
+    <ul>
+      <li>The Service offers a <strong>7-day free trial</strong>, then <strong>$9.99/month</strong>, auto-renewing until canceled.</li>
+      <li>Payments and invoicing are handled by Paddle as Merchant of Record. Taxes may apply based on your location.</li>
+      <li>You can cancel anytime from the Paddle receipt/customer portal or by emailing <a href="mailto:support@securenetcheck.net">support@securenetcheck.net</a>.</li>
+    </ul>
 
     <h2>4. No Warranties</h2>
-    <p>The Service provides network diagnostics on a best‑effort basis and “as‑is”. Results are approximate and for reference only.</p>
+    <p>The Service is provided on an “as-is” and “as-available” basis. Results are approximate and for reference only.</p>
 
     <h2>5. Limitation of Liability</h2>
-    <p>To the maximum extent permitted by law, SecureNet Check will not be liable for any indirect, incidental, or consequential damages.</p>
+    <p>To the maximum extent permitted by law, SecureNet shall not be liable for indirect, incidental, consequential, or punitive damages.</p>
 
     <h2>6. Termination</h2>
-    <p>We may suspend or terminate access if we reasonably believe you violate these Terms or abuse the Service.</p>
+    <p>We may suspend or terminate access if we reasonably believe you violate these Terms or abuse the Service. Upon termination, your right to use the Service ceases.</p>
 
-    <h2>7. Contact</h2>
-    <p>Questions? Email us at <a href="mailto:support@securenetcheck.net">support@securenetcheck.net</a>.</p>
-  </div>
-</div>
-</html>
+    <h2>7. Changes</h2>
+    <p>We may update these Terms from time to time. Continued use after changes constitutes acceptance.</p>
+
+    <h2>8. Contact</h2>
+    <p>Questions? Email <a href="mailto:support@securenetcheck.net">support@securenetcheck.net</a>.<br>
+      Business address: 1-2-2 Umeda, Osaka Ekimae Dai 2 Building 12-12, Kita-ku, Osaka 530-0001, Japan</p>
