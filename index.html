@@ -67,14 +67,6 @@
     @media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}}
     @media (max-width:640px){.footer-grid{grid-template-columns:1fr}}
   </style>
-
-  <!-- Structured data -->
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebSite","name":"SecureNet Check","url":"https://www.securenetcheck.net/"}
-  </script>
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Product","name":"SecureNet Check","description":"Read-only, self-assessment network diagnostics: IP & reverse DNS, VPN/Proxy/Tor signals, DNSBL reputation, WebRTC visibility, latency probes. No VPN/proxy or device-repair features.","brand":{"@type":"Brand","name":"SecureNet"},"offers":{"@type":"Offer","price":"9.99","priceCurrency":"USD","url":"https://www.securenetcheck.net/pricing","availability":"https://schema.org/InStock"}}
-  </script>
 </head>
 <body>
   <header>
@@ -95,7 +87,7 @@
     <section class="hero container">
       <div class="split">
         <div>
-          <div class="pill" title="Checkout by Paddle">
+          <div class="pill">
             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 5v4.268l3.536 2.04-.999 1.732L11 12V7h2Z"/></svg>
             7-day free trial → $9.99/month • Cancel anytime
           </div>
@@ -108,12 +100,11 @@
           <div class="cta-row">
             <a class="btn primary" href="/pricing#start">Start Free Trial</a>
             <a class="btn" href="/pricing">View Pricing</a>
-            <span class="tiny">Secure checkout powered by Paddle</span>
           </div>
           <div class="list" style="margin-top:14px">
-            <div class="li"><svg width="18" height="18" viewBox="0 0 24 24" fill="#35d07f"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Free for the first 7 days; billing begins after the trial unless canceled.</div>
-            <div class="li"><svg width="18" height="18" viewBox="0 0 24 24" fill="#35d07f"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Cancel anytime from your Paddle receipt/portal or by contacting support.</div>
-            <div class="li"><svg width="18" height="18" viewBox="0 0 24 24" fill="#35d07f"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> We don’t store full card details. Payments are handled by Paddle (Merchant of Record).</div>
+            <div class="li">Free for the first 7 days; billing begins after the trial unless canceled.</div>
+            <div class="li">Cancel anytime from your account dashboard or by contacting support.</div>
+            <div class="li">We don’t store full card details. Payments are handled securely.</div>
           </div>
         </div>
         <div>
@@ -151,22 +142,21 @@
           <h2 style="margin-top:0">Simple pricing</h2>
           <p class="lead">Start free. Keep it if you love it.</p>
           <div class="list">
-            <div class="li"><svg width="18" height="18" viewBox="0 0 24 24" fill="#35d07f"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> <strong>7-day free trial</strong> with full access</div>
-            <div class="li"><svg width="18" height="18" viewBox="0 0 24 24" fill="#35d07f"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Then <strong class="price">$9.99<span style="font-size:16px;font-weight:600">/month</span></strong> (auto-renewing)</div>
-            <div class="li"><svg width="18" height="18" viewBox="0 0 24 24" fill="#35d07f"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Cancel anytime from your Paddle receipt or customer portal</div>
+            <div class="li"><strong>7-day free trial</strong> with full access</div>
+            <div class="li">Then <strong class="price">$9.99<span style="font-size:16px;font-weight:600">/month</span></strong> (auto-renewing)</div>
+            <div class="li">Cancel anytime from your account dashboard</div>
           </div>
           <div class="cta-row"><a class="btn primary" href="/pricing#start">See plans & start trial</a></div>
-          <p class="tiny" style="margin-top:10px">All prices in USD. Taxes may apply depending on your location. Payments and invoicing are handled by Paddle (Merchant of Record).</p>
+          <p class="tiny" style="margin-top:10px">All prices in USD. Taxes may apply depending on your location.</p>
         </div>
         <div class="card">
           <h2 style="margin:0 0 8px">How it works</h2>
           <ol style="margin:0 0 8px 18px">
             <li>Click <em>Start Free Trial</em> and create an account.</li>
-            <li>Secure checkout opens (Paddle). Cancel any time during the trial.</li>
+            <li>Secure checkout opens. Cancel any time during the trial.</li>
             <li>Run diagnostics in the dashboard and export results if needed.</li>
             <li>Continue at $9.99/month after 7 days, or cancel in one click.</li>
           </ol>
-          <div class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="#35d07f"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Apple Pay / Google Pay supported via Paddle</div>
         </div>
       </div>
     </section>
@@ -187,7 +177,7 @@
       <h2>Privacy & security</h2>
       <div class="list">
         <div class="li">Minimal cookies/local storage for preferences. Diagnostic results are displayed client-side; any server-side logs, if present, are retained briefly for security/audit.</div>
-        <div class="li">We do not sell personal data. Billing information is processed by Paddle; we do not store full card details.</div>
+        <div class="li">We do not sell personal data. Billing information is processed securely; we do not store full card details.</div>
         <div class="li">See our <a href="/privacy">Privacy Policy</a> for details.</div>
         <div class="li"><span class="tiny">SecureNet Check is a <strong>diagnostics tool only</strong>; we do not provide or promote VPN/proxy services or any activity that circumvents network restrictions.</span></div>
       </div>
@@ -197,7 +187,7 @@
       <h2>FAQ</h2>
       <div class="faq">
         <details><summary>How do I cancel?</summary>
-          <div class="tiny" style="margin-top:8px">Your Paddle receipt includes a <em>Manage Subscription</em> link to cancel anytime. You can also cancel from the Paddle customer portal or by emailing <a href="mailto:support@securenetcheck.net">support@securenetcheck.net</a>.</div>
+          <div class="tiny" style="margin-top:8px">You can cancel anytime from your account dashboard or by emailing <a href="mailto:support@securenetcheck.net">support@securenetcheck.net</a>.</div>
         </details>
         <details><summary>What happens after the 7-day trial?</summary>
           <div class="tiny" style="margin-top:8px">If you don’t cancel during the trial, your subscription renews automatically at $9.99 per month until canceled.</div>
@@ -233,8 +223,7 @@
       </div>
       <div>
         <strong>Billing</strong><br />
-        <span class="tiny">Merchant of Record: Paddle</span><br />
-        <span class="tiny">Cancel anytime from your Paddle receipt/portal.</span>
+        <span class="tiny">Cancel anytime from your account dashboard.</span>
       </div>
     </div>
     <div class="container" style="padding:0 24px 26px">
