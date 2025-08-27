@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SecureNet Check — Network Diagnostics (Self-Assessment) | 7-Day Free Trial</title>
-  <meta name="description" content="SecureNet Check is a self-assessment network diagnostics tool for educational and security-hygiene checks. It does not provide VPN/proxy services or device repair. 7-day free trial, then $9.99/month. Cancel anytime." />
+  <title>Network Security Exposure Check (Read-only) | SecureNet Check</title>
+  <meta name="description" content="See what your network reveals: IP & reverse DNS, VPN/Proxy/Tor signals, WebRTC exposure, DNSBL reputation, ASN/geo, and latency probes. Read-only checks for privacy & hygiene. 7-day free trial, then $9.99/month. Cancel anytime." />
   <link rel="canonical" href="https://www.securenetcheck.net/" />
-  <meta property="og:title" content="SecureNet Check — Network Diagnostics (Self-Assessment)" />
-  <meta property="og:description" content="Run safe, read-only checks (IP, rDNS, VPN/Proxy/Tor signals, WebRTC visibility, DNSBL reputation, latency). No VPN or device-repair functions. 7-day free trial." />
+  <meta property="og:title" content="Network Security Exposure Check (Read-only) | SecureNet Check" />
+  <meta property="og:description" content="Find and reduce network exposure without changing anything. IP/rDNS, VPN/Proxy/Tor signals, WebRTC exposure, DNSBL reputation, ASN/geo, latency. 7-day free trial." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.securenetcheck.net/" />
   <meta name="theme-color" content="#0b1220" />
@@ -38,20 +38,20 @@
     .li{display:flex;gap:10px;align-items:flex-start}
     .li svg{flex:0 0 auto;margin-top:4px}
 
+    .pill{display:inline-flex;gap:8px;align-items:center;background:#0e1730;border:1px solid var(--border);padding:6px 10px;border-radius:999px;color:var(--muted);font-size:13px}
+
     .cta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:12px;border:1px solid var(--border);background:#0f1a30;color:#fff;font-weight:600}
     .btn.primary{background:var(--accent-strong);border-color:#3a63d8}
     .btn.primary:hover{filter:brightness(1.08)}
 
-    .pill{display:inline-flex;gap:8px;align-items:center;background:#0e1730;border:1px solid var(--border);padding:6px 10px;border-radius:999px;color:var(--muted);font-size:13px}
+    .section{padding:32px 0}
 
     .features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
     @media (max-width:1000px){.features{grid-template-columns:repeat(2,1fr)}}
     @media (max-width:680px){.features{grid-template-columns:1fr}}
     .feat h3{margin:10px 0 8px;font-size:18px}
     .feat p{color:var(--muted);margin:0}
-
-    .section{padding:32px 0}
 
     .pricing{display:grid;grid-template-columns:1fr 1fr;gap:18px}
     @media (max-width:900px){.pricing{grid-template-columns:1fr}}
@@ -73,7 +73,7 @@
     <div class="container nav">
       <div class="brand"><span class="dot"></span> SecureNet Check</div>
       <nav style="display:flex;gap:12px;align-items:center">
-        <a href="#features">Features</a>
+        <a href="#checks">Checks</a>
         <a href="/pricing">Pricing</a>
         <a class="btn" href="/terms">Terms</a>
         <a class="btn" href="/privacy">Privacy</a>
@@ -87,15 +87,15 @@
     <section class="hero container">
       <div class="split">
         <div>
-          <div class="pill">
+          <div class="pill" title="7-day free trial → $9.99/month">
             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 5v4.268l3.536 2.04-.999 1.732L11 12V7h2Z"/></svg>
             7-day free trial → $9.99/month • Cancel anytime
           </div>
-          <h1>Read-only Network Diagnostics for Self-Assessment</h1>
+          <h1>Network Security Exposure Check (Read-only)</h1>
           <p class="lead">
-            SecureNet Check helps individuals and teams perform <strong>safe, read-only</strong> network hygiene checks:
-            IP & reverse DNS, VPN/Proxy/Tor signals, DNSBL reputation, WebRTC visibility, ASN/geo, and latency probes.
-            <br><strong>We do not provide VPN/proxy services, device repair, or circumvention tools.</strong>
+            See what your network reveals—without changing anything. We visualize your external footprint:
+            IP & reverse DNS, VPN/Proxy/Tor signals, WebRTC exposure, DNSBL reputation, ASN/geo, and latency probes.
+            <br><strong>Not a VPN/proxy or circumvention tool. Diagnostics only.</strong>
           </p>
           <div class="cta-row">
             <a class="btn primary" href="/pricing#start">Start Free Trial</a>
@@ -106,17 +106,20 @@
             <div class="li">Cancel anytime from your account dashboard or by contacting support.</div>
             <div class="li">We don’t store full card details. Payments are handled securely.</div>
           </div>
+          <div class="tiny" style="margin-top:6px;color:var(--muted)">
+            For privacy-conscious users, remote workers, and small IT teams.
+          </div>
         </div>
         <div>
           <div class="card">
-            <h2 style="margin:0 0 6px">What you’ll see</h2>
-            <p class="tiny" style="margin:0 0 8px">Sample of read-only diagnostics</p>
+            <h2 style="margin:0 0 6px">What we check</h2>
+            <p class="tiny" style="margin:0 0 8px">Read-only diagnostics (no changes to your device/network)</p>
             <div class="list">
-              <div class="li"><strong>IP & Reverse DNS</strong> — public IP, rDNS, and WebRTC exposure (no changes made to your device/network).</div>
-              <div class="li"><strong>VPN/Proxy/Tor signals</strong> — heuristic checks against known ranges & indicators.</div>
-              <div class="li"><strong>DNSBL reputation</strong> — quick lookups on common blacklists.</div>
+              <div class="li"><strong>IP & Reverse DNS</strong> — public IP, rDNS, and WebRTC exposure.</div>
+              <div class="li"><strong>VPN/Proxy/Tor signals</strong> — indicators & known range heuristics.</div>
+              <div class="li"><strong>DNSBL reputation</strong> — quick checks across common blacklists.</div>
               <div class="li"><strong>Country/ASN</strong> — geolocation, ASN/ISP, and time zone.</div>
-              <div class="li"><strong>Latency probes</strong> — ping-like round-trip timings to well-known endpoints.</div>
+              <div class="li"><strong>Latency probes</strong> — round-trip timings to well-known endpoints.</div>
             </div>
             <a class="btn primary" style="margin-top:10px;width:100%" href="/pricing#start">Try it free for 7 days</a>
           </div>
@@ -124,15 +127,15 @@
       </div>
     </section>
 
-    <section id="features" class="section container">
-      <h2>Everything you need for quick, safe hygiene checks</h2>
+    <section id="checks" class="section container">
+      <h2>What we check (read-only)</h2>
       <div class="features" style="margin-top:12px">
         <div class="card feat"><h3>Instant IP & rDNS</h3><p>See your current IP, reverse DNS, and WebRTC visibility. Copy results in one click.</p></div>
         <div class="card feat"><h3>VPN / Proxy / Tor signals</h3><p>Indicators only — we do not provide anonymization or bypass services.</p></div>
         <div class="card feat"><h3>DNSBL & reputation</h3><p>Spot potential mail or network reputation issues quickly.</p></div>
         <div class="card feat"><h3>ASN, ISP & Geo</h3><p>Organizational ASN, ISP, country, city, and time zone at a glance.</p></div>
-        <div class="card feat"><h3>WebRTC visibility</h3><p>Check whether your browser exposes local/public addresses.</p></div>
-        <div class="card feat"><h3>Latency probes</h3><p>Measure round-trip times to popular DoH/CDN endpoints (read-only).</p></div>
+        <div class="card feat"><h3>WebRTC exposure</h3><p>Check whether your browser exposes local/public addresses.</p></div>
+        <div class="card feat"><h3>Latency probes</h3><p>Measure round-trip times to popular DoH/CDN endpoints.</p></div>
       </div>
     </section>
 
@@ -140,7 +143,7 @@
       <div class="pricing">
         <div class="card">
           <h2 style="margin-top:0">Simple pricing</h2>
-          <p class="lead">Start free. Keep it if you love it.</p>
+          <p class="lead">Start free. Keep it if it helps you reduce exposure.</p>
           <div class="list">
             <div class="li"><strong>7-day free trial</strong> with full access</div>
             <div class="li">Then <strong class="price">$9.99<span style="font-size:16px;font-weight:600">/month</span></strong> (auto-renewing)</div>
@@ -157,6 +160,7 @@
             <li>Run diagnostics in the dashboard and export results if needed.</li>
             <li>Continue at $9.99/month after 7 days, or cancel in one click.</li>
           </ol>
+          <div class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="#35d07f"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Read-only checks — no changes to your device/network</div>
         </div>
       </div>
     </section>
@@ -165,8 +169,8 @@
       <h2>Compliance & lawful use</h2>
       <div class="card">
         <div class="list">
-          <div class="li"><strong>Read-only & educational:</strong> SecureNet Check is a diagnostics tool for self-assessment and security hygiene awareness. It does <em>not</em> modify your device or network.</div>
-          <div class="li"><strong>Not a VPN/proxy or repair service:</strong> We do not provide anonymization, circumvention, device repair, or performance-boost features.</div>
+          <div class="li"><strong>Read-only & educational:</strong> Diagnostics for self-assessment and hygiene awareness. We do <em>not</em> modify your device or network.</div>
+          <div class="li"><strong>Not a VPN/proxy or repair service:</strong> No anonymization, circumvention, device repair, or performance-boost features.</div>
           <div class="li"><strong>Respect third-party property:</strong> Use only on networks/devices you own or are authorized to test. No intrusive scanning or unauthorized access.</div>
           <div class="li"><strong>AUP-aligned:</strong> Use must comply with applicable laws, card-network rules, and our <a href="/terms">Terms</a>. See our <a href="/privacy">Privacy Policy</a> for data handling.</div>
         </div>
@@ -203,7 +207,7 @@
     <div class="container footer-grid" style="padding:22px 24px">
       <div>
         <div class="brand" style="margin-bottom:8px"><span class="dot"></span> SecureNet Check</div>
-        <div class="tiny">Network diagnostics made simple: read-only checks for IP & rDNS, VPN/Proxy/Tor signals, DNSBL, WebRTC, and latency.</div>
+        <div class="tiny">Network security exposure checks made simple: IP/rDNS, VPN/Proxy/Tor signals, DNSBL, WebRTC, and latency.</div>
         <div class="tiny" style="margin-top:6px">
           Contact: <a href="mailto:support@securenetcheck.net">support@securenetcheck.net</a><br>
           Business address: 1-2-2 Umeda, Osaka Ekimae Dai 2 Building 12-12, Kita-ku, Osaka 530-0001, Japan
@@ -212,7 +216,7 @@
       <div>
         <strong>Product</strong><br />
         <a href="/pricing">Pricing</a><br />
-        <a href="#features">Features</a>
+        <a href="#checks">Checks</a>
       </div>
       <div>
         <strong>Legal</strong><br />
