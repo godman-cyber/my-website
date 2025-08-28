@@ -12,14 +12,16 @@
 <meta property="og:url" content="https://www.securenetcheck.net/pricing" />
 <meta name="theme-color" content="#0b1220" />
 
-<!-- Minimal CSP (adjust as needed) -->
+<!-- CSP: Stripeを許可（必要最小限） -->
 <meta http-equiv="Content-Security-Policy"
-  content="default-src 'self';
-           connect-src 'self';
-           img-src 'self' data:;
-           script-src 'self' 'unsafe-inline' 'unsafe-eval';
-           style-src 'self' 'unsafe-inline';
-           frame-src 'self';">
+  content="
+    default-src 'self';
+    connect-src 'self' https://api.stripe.com;
+    img-src 'self' data: https://q.stripe.com;
+    script-src 'self' https://js.stripe.com 'unsafe-inline';
+    style-src 'self' 'unsafe-inline';
+    frame-src https://js.stripe.com;
+  ">
 
 <style>
   :root{
@@ -78,7 +80,7 @@
       <a class="btn" href="/terms">Terms</a>
       <a class="btn" href="/privacy">Privacy</a>
       <a class="btn" href="/refund">Refunds</a>
-      <a class="btn cta" href="#start">Start Free Trial</a>
+      <a id="checkoutBtn" class="btn cta" href="#start">Start Free Trial</a>
     </nav>
   </div>
 </header>
@@ -96,9 +98,13 @@
           <div class="li">✅ Cancel anytime from your account dashboard or by contacting support</div>
         </div>
 
-        <div id="start" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-          <a id="checkoutBtn" class="btn" href="/">Start Free Trial</a>
-          <a class="btn secondary" href="/cancel">How to Cancel</a>
+        <!-- ウォレット専用エリア -->
+        <div id="start" style="margin-top:12px">
+          <div id="wallet" style="margin:6px 0 4px"></div>
+          <div class="tiny" id="walletNote">Use a device with Apple&nbsp;Pay or Google&nbsp;Pay.</div>
+          <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn secondary" href="/cancel">How to Cancel</a>
+          </div>
         </div>
 
         <div class="legal">
@@ -153,9 +159,105 @@
   </div>
 </footer>
 
+<noscript><div class="wrap tiny">JavaScript is required.</div></noscript>
+
+<!-- Stripe.js -->
+<script src="https://js.stripe.com/v3/"></script>
 <script>
-// 年号
+// ===== 年号 =====
 document.getElementById('y').textContent = new Date().getFullYear();
+
+// ===== 公開鍵（pk_live_... に置き換えて） =====
+const stripe = Stripe("pk_live_REPLACE_ME");
+
+// CTAはウォレットエリアへスクロール
+document.getElementById('checkoutBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('start').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// ===== ウォレットボタン（Apple Pay / Google Payのみ） =====
+(async () => {
+  try {
+    // 1) サーバーからSetupIntentを作成（支払い手段を保存するため）
+    const r = await fetch("/api/create-setup-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "" }) // 任意。持っているならユーザーのメールを渡す
+    });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+    const { clientSecret, customerId } = data;
+
+    // 2) Elements初期化
+    const elements = stripe.elements({ clientSecret });
+
+    // 3) Payment Request（ウォレットのみ／カードUIは出ない）
+    const paymentRequest = stripe.paymentRequest({
+      country: "US",               // 課金通貨がUSDなのでUSでOK（JPでも可）
+      currency: "usd",
+      total: { label: "SecureNet Check — Free trial", amount: 0 },
+      requestPayerEmail: true,
+      requestPayerName: true,
+    });
+
+    // 対応端末か確認
+    const can = await paymentRequest.canMakePayment();
+    if (!can) {
+      // 非対応端末：ボタンを出さずに注意書きだけ
+      document.getElementById("walletNote").textContent =
+        "Please use a device with Apple Pay or Google Pay.";
+      return;
+    }
+
+    // 4) ウォレットボタンをマウント
+    const prButton = elements.create("paymentRequestButton", { paymentRequest });
+    prButton.mount("#wallet");
+    document.getElementById("walletNote").textContent =
+      "Secure, fast checkout with Apple Pay / Google Pay.";
+
+    // 5) ユーザーがウォレット承認 → 支払い手段を保存 → サブスク作成
+    paymentRequest.on("paymentmethod", async (ev) => {
+      try {
+        // 支払い手段をSetupIntentにアタッチして保存
+        const { setupIntent, error: setupErr } = await stripe.confirmCardSetup(clientSecret, {
+          payment_method: ev.paymentMethod.id
+        });
+        if (setupErr) {
+          ev.complete("fail");
+          alert(setupErr.message);
+          return;
+        }
+
+        // 保存済みPMで7日無料→$9.99/月のサブスクを作成
+        const r2 = await fetch("/api/start-subscription", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerId,
+            paymentMethodId: setupIntent.payment_method
+          })
+        });
+        const data2 = await r2.json();
+        if (data2.error) {
+          ev.complete("fail");
+          alert(data2.error);
+          return;
+        }
+
+        ev.complete("success");
+        // 任意の完了ページへ
+        window.location.href = "/thanks";
+      } catch (err) {
+        ev.complete("fail");
+        alert(err.message || "Payment failed.");
+      }
+    });
+  } catch (e) {
+    console.error(e);
+    document.getElementById("walletNote").textContent = "Temporarily unavailable. Please try again later.";
+  }
+})();
 </script>
 </body>
 </html>
