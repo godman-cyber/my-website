@@ -215,7 +215,7 @@ document.getElementById('checkoutBtn').addEventListener('click', (e) => {
         "Please use a device with Apple Pay or Google Pay.";
       return;
     }
-    let theme = "dark";                 // Google Pay用のデフォルト
+    let theme = "light";                 // Google Pay用のデフォルト
     if (can && can.applePay) theme = "light";  // iOS/Safariは白に切替
 
     // 4) ボタン表示（入れ物の幅にフィット）
@@ -263,3 +263,4 @@ document.getElementById('checkoutBtn').addEventListener('click', (e) => {
 </script>
 </body>
 </html>
+
