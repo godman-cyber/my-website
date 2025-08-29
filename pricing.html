@@ -12,15 +12,15 @@
 <meta property="og:url" content="https://www.securenetcheck.net/pricing" />
 <meta name="theme-color" content="#0b1220" />
 
-<!-- CSP: Stripeを許可（必要最小限） -->
+<!-- CSP: Stripe用に必要最小限（hooks & m.stripe.network を追加） -->
 <meta http-equiv="Content-Security-Policy"
   content="
     default-src 'self';
-    connect-src 'self' https://api.stripe.com;
+    connect-src 'self' https://api.stripe.com https://m.stripe.network;
     img-src 'self' data: https://q.stripe.com;
     script-src 'self' https://js.stripe.com 'unsafe-inline';
     style-src 'self' 'unsafe-inline';
-    frame-src https://js.stripe.com;
+    frame-src https://js.stripe.com https://hooks.stripe.com;
   ">
 
 <style>
@@ -55,7 +55,6 @@
   li{margin:6px 0}
   .list{display:grid;gap:10px;margin:12px 0}
   .li{display:flex;gap:8px;align-items:flex-start}
-  .li svg{flex:0 0 auto;margin-top:3px}
 
   .btn{display:inline-flex;gap:10px;align-items:center;background:var(--accent-strong);border:1px solid #3a63d8;color:#fff;
        padding:14px 18px;border-radius:12px;font-weight:700;cursor:pointer}
@@ -164,10 +163,10 @@
 <!-- Stripe.js -->
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-// ===== 年号 =====
+// 年号
 document.getElementById('y').textContent = new Date().getFullYear();
 
-// ===== 公開鍵（pk_live_... に置き換えて） =====
+// 公開鍵（自分の pk_live_* に差し替え）
 const stripe = Stripe("pk_live_51S0iNEBrKw2crSlH55Q28iWmA0rr6iei2y0rck5WQyyIC4R9Nv8FLYQtjKKCfAqNXsDLeIg2MKBC5R3Y6LSL3cMA00dAiOI3om");
 
 // CTAはウォレットエリアへスクロール
@@ -176,60 +175,54 @@ document.getElementById('checkoutBtn').addEventListener('click', (e) => {
   document.getElementById('start').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
-// ===== ウォレットボタン（Apple Pay / Google Payのみ） =====
+// Payment Request Button（Apple Pay / Google Pay）
 (async () => {
   try {
-    // 1) サーバーからSetupIntentを作成（支払い手段を保存するため）
+    // 1) サーバーでSetupIntentを作成（支払い手段を保存）
     const r = await fetch("/api/create-setup-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "" }) // 任意。持っているならユーザーのメールを渡す
+      body: JSON.stringify({ email: "" }) // 任意でメールを渡す
     });
-    const data = await r.json();
-    if (data.error) throw new Error(data.error);
-    const { clientSecret, customerId } = data;
+    const { clientSecret, customerId, error } = await r.json();
+    if (error) throw new Error(error);
 
-    // 2) Elements初期化
-    const elements = stripe.elements({ clientSecret });
-
-    // 3) Payment Request（ウォレットのみ／カードUIは出ない）
+    // 2) PRBのセットアップ（ElementsはclientSecret不要）
+    const elements = stripe.elements();
     const paymentRequest = stripe.paymentRequest({
-      country: "US",               // 課金通貨がUSDなのでUSでOK（JPでも可）
+      country: "JP",                 // 事業者国。通貨はUSDでもOK
       currency: "usd",
       total: { label: "SecureNet Check — Free trial", amount: 0 },
       requestPayerEmail: true,
       requestPayerName: true,
     });
 
-    // 対応端末か確認
+    // 3) 対応端末か判定
     const can = await paymentRequest.canMakePayment();
     if (!can) {
-      // 非対応端末：ボタンを出さずに注意書きだけ
       document.getElementById("walletNote").textContent =
         "Please use a device with Apple Pay or Google Pay.";
       return;
     }
 
-    // 4) ウォレットボタンをマウント
-    const prButton = elements.create("paymentRequestButton", { paymentRequest });
+    // 4) ボタン表示（高さ必須）
+    const prButton = elements.create("paymentRequestButton", {
+      paymentRequest,
+      style: { paymentRequestButton: { theme: "dark", height: "48px" } },
+    });
     prButton.mount("#wallet");
     document.getElementById("walletNote").textContent =
       "Secure, fast checkout with Apple Pay / Google Pay.";
 
-    // 5) ユーザーがウォレット承認 → 支払い手段を保存 → サブスク作成
+    // 5) ウォレット承認 → 支払い手段を保存 → サブスク作成
     paymentRequest.on("paymentmethod", async (ev) => {
       try {
-        // 支払い手段をSetupIntentにアタッチして保存
-        const { setupIntent, error: setupErr } = await stripe.confirmCardSetup(clientSecret, {
-          payment_method: ev.paymentMethod.id
-        });
-        if (setupErr) {
-          ev.complete("fail");
-          alert(setupErr.message);
-          return;
-        }
+        const { setupIntent, error: setupErr } = await stripe.confirmCardSetup(
+          clientSecret,
+          { payment_method: ev.paymentMethod.id }
+        );
+        if (setupErr) throw setupErr;
 
-        // 保存済みPMで7日無料→$9.99/月のサブスクを作成
         const r2 = await fetch("/api/start-subscription", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -239,14 +232,9 @@ document.getElementById('checkoutBtn').addEventListener('click', (e) => {
           })
         });
         const data2 = await r2.json();
-        if (data2.error) {
-          ev.complete("fail");
-          alert(data2.error);
-          return;
-        }
+        if (data2.error) throw new Error(data2.error);
 
         ev.complete("success");
-        // 任意の完了ページへ
         window.location.href = "/thanks";
       } catch (err) {
         ev.complete("fail");
@@ -255,10 +243,10 @@ document.getElementById('checkoutBtn').addEventListener('click', (e) => {
     });
   } catch (e) {
     console.error(e);
-    document.getElementById("walletNote").textContent = "Temporarily unavailable. Please try again later.";
+    document.getElementById("walletNote").textContent =
+      "Temporarily unavailable. Please try again later.";
   }
 })();
 </script>
 </body>
 </html>
-
