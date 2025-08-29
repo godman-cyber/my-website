@@ -12,7 +12,7 @@
 <meta property="og:url" content="https://www.securenetcheck.net/pricing" />
 <meta name="theme-color" content="#0b1220" />
 
-<!-- CSP: Stripe用に必要最小限（hooks & m.stripe.network を追加） -->
+<!-- CSP: Stripe最小セット -->
 <meta http-equiv="Content-Security-Policy"
   content="
     default-src 'self';
@@ -67,6 +67,17 @@
   .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:18px}
   @media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}}
   @media (max-width:640px){.footer-grid{grid-template-columns:1fr}}
+
+  /* ====== PRB（ウォレット）の“見た目”を外側で整える ====== */
+  #walletWrap{ display:flex; justify-content:center; margin:6px 0 4px; }
+  /* ボタンを収める入れ物。角丸＆影で“浮かせる” */
+  #wallet{
+    width:100%; max-width:420px;
+    border-radius:9999px;        /* 完全ピル型 */
+    overflow:hidden;             /* 角丸を中のiframeに強制適用 */
+    box-shadow:0 10px 28px rgba(0,0,0,.28);
+    background: rgba(255,255,255,.06); /* 暗い背景でコントラストを少し足す */
+  }
 </style>
 </head>
 <body>
@@ -99,7 +110,7 @@
 
         <!-- ウォレット専用エリア -->
         <div id="start" style="margin-top:12px">
-          <div id="wallet" style="margin:6px 0 4px"></div>
+          <div id="walletWrap"><div id="wallet"></div></div>
           <div class="tiny" id="walletNote">Use a device with Apple&nbsp;Pay or Google&nbsp;Pay.</div>
           <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
             <a class="btn secondary" href="/cancel">How to Cancel</a>
@@ -166,7 +177,7 @@
 // 年号
 document.getElementById('y').textContent = new Date().getFullYear();
 
-// 公開鍵（自分の pk_live_* に差し替え）
+// 公開鍵（自分の pk_live_* に差し替えOK）
 const stripe = Stripe("pk_live_51S0iNEBrKw2crSlH55Q28iWmA0rr6iei2y0rck5WQyyIC4R9Nv8FLYQtjKKCfAqNXsDLeIg2MKBC5R3Y6LSL3cMA00dAiOI3om");
 
 // CTAはウォレットエリアへスクロール
@@ -190,25 +201,27 @@ document.getElementById('checkoutBtn').addEventListener('click', (e) => {
     // 2) PRBのセットアップ（ElementsはclientSecret不要）
     const elements = stripe.elements();
     const paymentRequest = stripe.paymentRequest({
-      country: "JP",                 // 事業者国。通貨はUSDでもOK
+      country: "JP",
       currency: "usd",
       total: { label: "SecureNet Check — Free trial", amount: 0 },
       requestPayerEmail: true,
       requestPayerName: true,
     });
 
-    // 3) 対応端末か判定
+    // 3) 対応端末か判定 ＆ テーマ自動切替（Apple Payは白に）
     const can = await paymentRequest.canMakePayment();
     if (!can) {
       document.getElementById("walletNote").textContent =
         "Please use a device with Apple Pay or Google Pay.";
       return;
     }
+    let theme = "dark";                 // Google Pay用のデフォルト
+    if (can && can.applePay) theme = "light";  // iOS/Safariは白に切替
 
-    // 4) ボタン表示（高さ必須）
+    // 4) ボタン表示（入れ物の幅にフィット）
     const prButton = elements.create("paymentRequestButton", {
       paymentRequest,
-      style: { paymentRequestButton: { theme: "dark", height: "48px" } },
+      style: { paymentRequestButton: { theme, height: "56px" } },
     });
     prButton.mount("#wallet");
     document.getElementById("walletNote").textContent =
